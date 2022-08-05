@@ -48,7 +48,21 @@ import math
 from statistics import mean
 
 from fontTools.misc.fixedTools import otRound
-from ufoLib2.objects import Glyph
+
+try:
+    from ufoLib2.objects import Glyph
+    
+    def new_glyph(name, unicodes):
+        return Glyph(name=name, unicodes=unicodes)
+
+except ImportError:
+    from defcon import Glyph
+    
+    def new_glyph(name, unicodes):
+        glyph = Glyph()
+        glyph.name = name
+        glyph.unicodes = unicodes
+        return glyph
 
 from ufo2ft.constants import OPENTYPE_CATEGORIES_KEY
 from ufo2ft.featureCompiler import parseLayoutFeatures
@@ -149,7 +163,7 @@ class DottedCircleFilter(BaseFilter):
         """Add a new dotted circle glyph, drawing its outlines"""
         font = self.context.font
         logger.debug("Adding dotted circle glyph")
-        glyph = Glyph(name="uni25CC", unicodes=[0x25CC])
+        glyph = new_glyph("uni25CC", [0x25CC])
         pen = glyph.getPen()
 
         bigradius = (font.info.xHeight - 2 * self.options.margin) / 2
